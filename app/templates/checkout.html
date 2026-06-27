@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcuSchedule — Checkout</title>
+  <script src="https://checkoutshopper-test.cdn.adyen.com/checkoutshopper/sdk/5.68.0/adyen.js"></script>
+  <link rel="stylesheet" href="https://checkoutshopper-test.cdn.adyen.com/checkoutshopper/sdk/5.68.0/adyen.css">
+  <style>
+    body { font-family: sans-serif; max-width: 480px; margin: 60px auto; padding: 0 24px; }
+    h1 { font-size: 1.4rem; margin-bottom: 8px; }
+    p { color: #666; margin-bottom: 32px; }
+  </style>
+</head>
+<body>
+  <h1>AcuSchedule</h1>
+  <p>Complete your payment below.</p>
+  <div id="dropin-container"></div>
+
+  <script>
+    const clientKey = "{{ client_key }}";
+
+    async function startCheckout() {
+      const sessionRes = await fetch("/api/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          practitionerId: "test-practitioner",
+          amount: 10000
+        })
+      });
+
+      const session = await sessionRes.json();
+
+      if (!session.id) {
+        document.getElementById("dropin-container").innerHTML =
+          "<p style='color:red'>Session error: " + JSON.stringify(session) + "</p>";
+        return;
+      }
+
+      const checkout = await AdyenCheckout({
+        session: { id: session.id, sessionData: session.sessionData },
+        clientKey: clientKey,
+        environment: "test",
+        amount: { value: 10000, currency: "USD" },
+        countryCode: "US",
+        locale: "en-US",
+        onPaymentCompleted: (result) => {
+          window.location.href = `/result?sessionId=${session.id}&resultCode=${result.resultCode}`;
+        },
+        onPaymentFailed: (result) => {
+          console.error("Payment failed", result);
+        },
+        onError: (error) => {
+          console.error("Checkout error", error);
+        }
+      });
+
+      new AdyenCheckout.Dropin(checkout, {}).mount("#dropin-container");
+    }
+
+    startCheckout();
+  </script>
+</body>
+</html>
