@@ -73,6 +73,8 @@ def payment_webhook():
         if HMAC_KEY:
             if not verify_hmac(notification, HMAC_KEY):
                 print("[WEBHOOK] HMAC verification failed — rejecting")
+                # Return 401 and stop processing — do not acknowledge invalid requests
+                # Logging here in production would help detect replay attacks or misconfigured keys
                 return "Invalid HMAC", 401
             
         event_code = notification.get("eventCode")
@@ -98,7 +100,10 @@ def payment_webhook():
 
     # Common mistake #4 (continued): always return [accepted] for events you
     # receive, even ones you don't process. Returning 4xx or 5xx causes retries.
-    return "[accepted]", 200
+    # - - - - - - - - - - - - - - - 
+    # Return 202 (not 200) — Adyen docs recommend 202 to prevent events being queued
+    # See: https://docs.adyen.com/online-payments/go-live-checklist#webhooks
+    return "[accepted]", 202
 
 
 @webhooks.route("/api/webhooks/kyc", methods=["POST"])
@@ -172,4 +177,6 @@ def kyc_webhook():
         # unhandled event types — that causes unnecessary retries.
         print(f"[KYC WEBHOOK] Unhandled event type: {event_type} — acknowledged")
 
-    return "[accepted]", 200
+    # Return 202 (not 200) — Adyen docs recommend 202 to prevent events being queued
+    # See: https://docs.adyen.com/online-payments/go-live-checklist#webhooks
+    return "[accepted]", 202
