@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcuSchedule — Payment Result</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 480px;
+      margin: 60px auto;
+      padding: 0 24px;
+      text-align: center;
+    }
+    .icon { font-size: 3rem; margin-bottom: 16px; }
+    h1 { font-size: 1.4rem; margin-bottom: 8px; }
+    p { color: #666; margin-bottom: 32px; }
+    .result-code {
+      display: inline-block;
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #f4f4f4;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 32px;
+    }
+    a {
+      display: inline-block;
+      padding: 10px 24px;
+      background: #0c3b2e;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    a:hover { background: #0a3228; }
+  </style>
+</head>
+<body>
+
+  {% if result_code == "Authorised" %}
+    <div class="icon">✅</div>
+    <h1>Payment successful</h1>
+    <p>Your appointment is confirmed. You'll receive a confirmation shortly.</p>
+
+  {% elif result_code == "Pending" or result_code == "Received" %}
+    <div class="icon">⏳</div>
+    <h1>Payment received</h1>
+    <p>We've received your payment request and are waiting for confirmation. We'll update you shortly.</p>
+
+  {% elif result_code == "Refused" %}
+    <div class="icon">❌</div>
+    <h1>Payment refused</h1>
+    <p>Your payment was refused. Please try again using a different card or payment method.</p>
+
+  {% elif result_code == "Cancelled" %}
+    <div class="icon">🚫</div>
+    <h1>Payment cancelled</h1>
+    <p>Your payment was cancelled. Would you like to try again?</p>
+
+  {% elif result_code == "Error" %}
+    <div class="icon">⚠️</div>
+    <h1>Something went wrong</h1>
+    <p>There was an error processing your payment. Please try again.</p>
+
+  {% else %}
+    <div class="icon">❓</div>
+    <h1>Payment status unknown</h1>
+    <p>We couldn't determine the status of your payment. Please contact support if you were charged.</p>
+
+  {% endif %}
+
+  <div class="result-code">{{ result_code }}</div>
+  <br>
+  <a href="/">Back to checkout</a>
+
+</body>
+</html>
