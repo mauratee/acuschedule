@@ -36,16 +36,16 @@ Copy `.env.example` to `.env` and fill in your credentials:
 cp .env.example .env
 ```
 
-```
-ADYEN_API_KEY=
-ADYEN_CLIENT_KEY=
-ADYEN_MERCHANT_ACCOUNT=
-ADYEN_HMAC_KEY=
-ADYEN_BALANCE_PLATFORM_API_KEY=
-ADYEN_LEM_API_KEY=
-ADYEN_BALANCE_PLATFORM_ID=
-PLATFORM_BALANCE_ACCOUNT_ID=
-DATABASE_URL=sqlite:///dev.db
+```bash
+ADYEN_API_KEY=                     # ws@ credential — Checkout API (server-side only)
+ADYEN_CLIENT_KEY=                  # client-side key — Drop-in UI (safe to expose in browser)
+ADYEN_MERCHANT_ACCOUNT=            # e.g. MauraMauraStudioECOM
+ADYEN_HMAC_KEY=                    # webhook HMAC signing key
+ADYEN_BALANCE_PLATFORM_API_KEY=    # ws@BalancePlatform credential — Configuration API
+ADYEN_LEM_API_KEY=                 # ws@Scope credential — Legal Entity Management API
+ADYEN_BALANCE_PLATFORM_ID=         # from ws credential username — requires Balance Platform access
+PLATFORM_BALANCE_ACCOUNT_ID=       # your platform's own liable balance account for commission
+DATABASE_URL=                      # sqlite:///dev.db or postgresql://...
 ```
 
 Run the app:
