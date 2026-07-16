@@ -8,7 +8,8 @@ from .models import Practitioner
 payments = Blueprint("payments", __name__)
 
 adyen = Adyen.Adyen()
-adyen.client.xapikey = os.environ.get("ADYEN_API_KEY")
+ADYEN_API_KEY = os.environ.get("ADYEN_API_KEY")
+adyen.client.xapikey = ADYEN_API_KEY
 adyen.client.platform = "test"
 
 MERCHANT_ACCOUNT = os.environ.get("ADYEN_MERCHANT_ACCOUNT")
@@ -87,5 +88,14 @@ def create_session():
     #         }
     #     ]
 
-    result = adyen.checkout.payments_api.sessions(request=body)
+    if not ADYEN_API_KEY or not MERCHANT_ACCOUNT:
+        return jsonify({
+            "error": "Adyen credentials are not configured. Set ADYEN_API_KEY and ADYEN_MERCHANT_ACCOUNT in the environment before using checkout."
+        }), 500
+
+    try:
+        result = adyen.checkout.payments_api.sessions(request=body)
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
     return jsonify(result.message)
