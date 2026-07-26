@@ -56,8 +56,8 @@
           console.error("Checkout error", error);
         }
       });
-
-      new AdyenCheckout.Dropin(checkout, {}).mount("#dropin-container");
+      
+      checkout.create("dropin").mount("#dropin-container");
     }
 
     startCheckout();
